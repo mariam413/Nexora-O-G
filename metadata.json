@@ -1,0 +1,6 @@
+{
+  "name": "NEXORA O&G",
+  "description": "AI-Powered Critical Materials & Procurement Intelligence for Oil & Gas Operations. Predict the spare. Secure the supply. Protect production.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,29 @@
+<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nexoraBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="nexoraGreenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#86efac" />
+      <stop offset="50%" stop-color="#4ade80" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="nexoraWhiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="70%" stop-color="#f0f9ff" />
+      <stop offset="100%" stop-color="#bae6fd" />
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#4ade80" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#090d16" />
+  <rect x="1" y="1" width="62" height="62" rx="13" stroke="url(#borderGrad)" stroke-width="2" fill="none" />
+  <path d="M14 50V16C14 14.3431 15.3431 13 17 13H23C24.6569 13 26 14.3431 26 16V40L14 50Z" fill="url(#nexoraBlueGrad)" />
+  <path d="M21 14L46 48H52L27 14H21Z" fill="url(#nexoraWhiteGrad)" />
+  <path d="M41 24L51 16V48C51 49.6569 49.6569 51 48 51H42C40.3431 51 39 49.6569 39 48V24Z" fill="url(#nexoraGreenGrad)" />
+  <circle cx="34" cy="31" r="2.5" fill="#ffffff" />
+</svg>

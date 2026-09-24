@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-brand-blue-50: #f0f9ff;
+  --color-brand-blue-100: #e0f2fe;
+  --color-brand-blue-200: #bae6fd;
+  --color-brand-blue-300: #7dd3fc;
+  --color-brand-blue-400: #38bdf8;
+  --color-brand-blue-500: #0ea5e9;
+  --color-brand-blue-600: #0284c7;
+
+  --color-brand-green-50: #f0fdf4;
+  --color-brand-green-100: #dcfce7;
+  --color-brand-green-200: #bbf7d0;
+  --color-brand-green-300: #86efac;
+  --color-brand-green-400: #4ade80;
+  --color-brand-green-500: #22c55e;
+  --color-brand-green-600: #16a34a;
+
+  /* Remap legacy amber/orange to Light Blue & Light Green theme */
+  --color-amber-50: #f0f9ff;
+  --color-amber-100: #e0f2fe;
+  --color-amber-200: #bae6fd;
+  --color-amber-300: #7dd3fc;
+  --color-amber-400: #38bdf8;
+  --color-amber-500: #0ea5e9;
+  --color-amber-600: #0284c7;
+  --color-amber-700: #0369a1;
+  --color-amber-800: #075985;
+  --color-amber-900: #0c4a6e;
+  --color-amber-950: #082f49;
+
+  --color-orange-50: #f0fdf4;
+  --color-orange-100: #dcfce7;
+  --color-orange-200: #bbf7d0;
+  --color-orange-300: #86efac;
+  --color-orange-400: #4ade80;
+  --color-orange-500: #22c55e;
+  --color-orange-600: #16a34a;
+  --color-orange-700: #15803d;
+  --color-orange-800: #166534;
+  --color-orange-900: #14532d;
+  --color-orange-950: #052e16;
+}
+
+/* Light Theme Variables (Light Blue, White, and Light Green - Ultra Professional & Legible) */
+html.light,
+:root:not(.dark) {
+  --color-slate-950: #f8fafc; /* Crisp, ultra-clean neutral canvas */
+  --color-slate-900: #ffffff; /* Pure crisp white cards, modals, headers */
+  --color-slate-800: #e2e8f0; /* Crisp structural borders with subtle tint */
+  --color-slate-700: #cbd5e1; /* Secondary borders & dividers */
+  --color-slate-600: #64748b; /* Muted helper & subtitle text (WCAG AA compliant) */
+  --color-slate-500: #475569; /* Secondary body & label text */
+  --color-slate-400: #334155; /* Highly legible body text */
+  --color-slate-300: #1e293b; /* High contrast body & card text */
+  --color-slate-200: #0f172a; /* Subheadings */
+  --color-slate-100: #020617; /* Deepest contrast for main headings & brand */
+  --color-slate-50: #000000;
+
+  /* Theme Accents in Light Mode */
+  --color-amber-50: #f0f9ff;
+  --color-amber-100: #e0f2fe;
+  --color-amber-200: #bae6fd;
+  --color-amber-300: #7dd3fc;
+  --color-amber-400: #0284c7; /* High contrast light blue */
+  --color-amber-500: #0284c7; /* Primary light blue */
+  --color-amber-600: #0369a1;
+
+  --color-orange-400: #16a34a;
+  --color-orange-500: #15803d; /* High contrast light green */
+}
+
+/* Dark Theme Variables (Deep Navy Slate with Luminous Light Blue & Light Green) */
+html.dark {
+  --color-slate-950: #070e1a;
+  --color-slate-900: #0d1728;
+  --color-slate-800: #17253d;
+  --color-slate-700: #223758;
+  --color-slate-600: #475d80;
+  --color-slate-500: #64748b;
+  --color-slate-400: #94a3b8;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f8fafc;
+  --color-slate-50: #ffffff;
+
+  --color-amber-400: #38bdf8;
+  --color-amber-500: #0ea5e9;
+  --color-orange-400: #4ade80;
+  --color-orange-500: #22c55e;
+}
+
+body {
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Tabular figures discipline for numbers, currency, and IDs */
+.tabular-nums, .font-mono, kbd, code, pre {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Headline balance */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 189, 248, 0.4);
+}
+
