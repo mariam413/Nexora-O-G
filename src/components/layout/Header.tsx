@@ -74,28 +74,35 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-30 flex flex-col bg-slate-900 border-b border-slate-800 text-slate-100 shadow-sm transition-colors">
-      {/* Top Prototype Banner - Light Blue & Light Green */}
-      <div className="bg-gradient-to-r from-sky-500/10 via-emerald-500/10 to-sky-500/10 border-b border-sky-400/20 px-4 py-1.5 flex items-center justify-between text-xs text-sky-700 dark:text-sky-300">
-        <div className="flex items-center gap-2">
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-bold tracking-wide">NEXORA O&amp;G INTELLIGENCE</span>
-          <span className="text-sky-500/40">|</span>
-          <span className="text-slate-600 dark:text-sky-200/80">Active Theme: Light Blue, White &amp; Light Green • Critical materials &amp; spare forecasting</span>
+      {/* Top Prototype Banner - High Contrast Enterprise Theme */}
+      <div className="bg-[#E0F4FA] dark:bg-slate-900 border-b border-[#65C7E5]/40 px-4 py-1.5 flex items-center justify-between text-xs text-[#082746] dark:text-slate-200">
+        <div className="flex items-center gap-2.5">
+          <span className="px-2 py-0.5 rounded bg-amber-600 text-white text-[10px] font-black uppercase tracking-wider">
+            DEMO ENVIRONMENT
+          </span>
+          <span className="inline-block w-2 h-2 rounded-full bg-[#32B86A] animate-pulse" />
+          <span className="font-black tracking-wide text-[#082746] dark:text-sky-300">
+            NEXORA O&amp;G INTELLIGENCE
+          </span>
+          <span className="text-slate-400">|</span>
+          <span className="text-[#334155] dark:text-slate-300 font-medium hidden sm:inline">
+            Predict the spare. Secure the supply. Protect production.
+          </span>
         </div>
         <div className="flex items-center gap-4">
           <button
             onClick={onOpenDemoGuide}
-            className="flex items-center gap-1 font-bold text-sky-600 dark:text-sky-400 hover:text-emerald-500 transition-colors cursor-pointer"
+            className="flex items-center gap-1 font-bold text-[#0A78B5] dark:text-sky-400 hover:text-[#00A6A6] transition-colors cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+            <Sparkles className="w-3.5 h-3.5 text-[#32B86A]" />
             <span>Master Demo Script</span>
           </button>
           <button
             onClick={handleResetData}
             title="Reset demonstration data"
-            className="flex items-center gap-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-[#082746] hover:text-[#0A78B5] dark:text-slate-400 dark:hover:text-slate-200 transition-colors cursor-pointer font-semibold"
           >
-            <RotateCcw className="w-3 h-3" />
+            <RotateCcw className="w-3 h-3 text-[#082746]" />
             <span>Reset Data</span>
           </button>
         </div>
@@ -169,13 +176,13 @@ export const Header: React.FC<HeaderProps> = ({
             <kbd className="hidden sm:inline px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-400 font-mono">⌘K</kbd>
           </button>
 
-          {/* Direct Nexora AI Button with Light Blue & Light Green gradient */}
+          {/* Direct Nexora AI Button with Brand Blue & Green gradient with white text */}
           <button
             onClick={() => onNavigate('assistant')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-sky-500/15 via-sky-400/10 to-emerald-500/15 hover:from-sky-500/25 hover:to-emerald-500/25 border border-sky-400/40 text-sky-500 font-bold text-xs transition-all shadow-sm cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#0A78B5] to-[#32B86A] hover:from-[#086396] hover:to-[#289e58] text-white font-bold text-xs transition-all shadow-sm cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden md:inline">Nexora AI</span>
+            <Sparkles className="w-3.5 h-3.5 text-white" />
+            <span className="hidden md:inline text-white font-bold">Nexora AI</span>
           </button>
 
           {/* Light Blue / White / Light Green Theme Mode Toggle */}

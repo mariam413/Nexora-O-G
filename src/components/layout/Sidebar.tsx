@@ -120,22 +120,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => onNavigate(item.id)}
               className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-sky-500/15 text-sky-600 dark:text-sky-300 font-bold border border-sky-400/30 shadow-sm'
-                  : 'text-slate-400 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-800/70 border border-transparent'
+                  ? 'bg-[#0A78B5] text-white font-bold shadow-sm'
+                  : 'text-[#082746] dark:text-slate-200 hover:text-[#082746] dark:hover:text-white hover:bg-[#E0F4FA]/70 dark:hover:bg-slate-800 border border-transparent'
               }`}
             >
               <div className="flex items-center gap-3 truncate">
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-sky-500' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-[#123B63] dark:text-slate-400'}`} />
                 <span className="truncate">{item.label}</span>
               </div>
               {item.badge && (
                 <span
                   className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
-                    item.badge === 'Signature'
-                      ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-400/40'
-                      : item.badge === 'AI' || item.badge === 'Gemini'
-                      ? 'bg-sky-500/20 text-sky-600 dark:text-sky-300 border border-sky-400/40'
-                      : 'bg-slate-800 text-slate-300'
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : item.badge === 'Signature'
+                      ? 'bg-[#32B86A] text-white font-bold'
+                      : item.badge === 'AI' || item.badge === 'Gemini' || item.badge === 'RFQs' || item.badge === 'Insights'
+                      ? 'bg-[#0A78B5] text-white font-bold'
+                      : 'bg-slate-200 dark:bg-slate-800 text-[#082746] dark:text-slate-300'
                   }`}
                 >
                   {item.badge}
@@ -150,12 +152,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3 border-t border-slate-800/80 bg-slate-950/40">
         <button
           onClick={onOpenDemoGuide}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-sky-500/15 to-emerald-500/15 hover:from-sky-500/25 hover:to-emerald-500/25 border border-sky-400/30 text-sky-600 dark:text-sky-300 text-xs font-semibold transition-all cursor-pointer"
+          className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-[#0A78B5] to-[#32B86A] hover:from-[#086396] hover:to-[#289e58] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
         >
-          <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+          <Sparkles className="w-4 h-4 text-white shrink-0" />
           <div className="text-left">
-            <div className="text-[11px] leading-tight font-bold">Interactive Tour</div>
-            <div className="text-[9px] text-slate-400 font-normal">22-Step Scripted Flow</div>
+            <div className="text-[11px] leading-tight font-bold text-white">Interactive Tour</div>
+            <div className="text-[9px] text-white/90 font-normal">22-Step Scripted Flow</div>
           </div>
         </button>
       </div>

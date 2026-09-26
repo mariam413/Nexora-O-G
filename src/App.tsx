@@ -48,12 +48,20 @@ export const App: React.FC = () => {
 
   // If user switches to Supplier role, adjust view to supplier portal if appropriate
   useEffect(() => {
-    if (
-      (currentUser.role === 'SUPPLIER_USER' || currentUser.role === 'SUPPLIER_ADMIN') &&
-      activeView !== 'supplier_portal' &&
-      activeView !== 'landing'
-    ) {
-      setActiveView('supplier_portal');
+    const isSupplierRole = currentUser.role === 'SUPPLIER_USER' || currentUser.role === 'SUPPLIER_ADMIN';
+    const isSupplierView =
+      activeView === 'supplier_portal' ||
+      activeView === 'supplier_dashboard' ||
+      activeView === 'opportunities' ||
+      activeView === 'supplier_inventory' ||
+      activeView === 'supplier_offers' ||
+      activeView === 'supplier_orders' ||
+      activeView === 'supplier_profile' ||
+      activeView === 'supplier_assistant' ||
+      activeView === 'supplier_settings';
+
+    if (isSupplierRole && !isSupplierView && activeView !== 'landing') {
+      setActiveView('supplier_dashboard');
     }
   }, [currentUser.role]);
 
@@ -224,8 +232,17 @@ export const App: React.FC = () => {
               <SupplierDirectory />
             )}
 
-            {activeView === 'supplier_portal' && (
+            {(activeView === 'supplier_portal' ||
+              activeView === 'supplier_dashboard' ||
+              activeView === 'opportunities' ||
+              activeView === 'supplier_inventory' ||
+              activeView === 'supplier_offers' ||
+              activeView === 'supplier_orders' ||
+              activeView === 'supplier_profile' ||
+              activeView === 'supplier_assistant' ||
+              activeView === 'supplier_settings') && (
               <SupplierPortal
+                initialTab={activeView}
                 onNavigate={handleNavigate}
               />
             )}

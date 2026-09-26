@@ -1,19 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+  LayoutDashboard,
   ShoppingBag,
-  Truck,
   Boxes,
   FileText,
-  CheckCircle,
-  AlertTriangle,
-  Clock,
+  Truck,
+  Award,
+  Bot,
+  Settings,
+  X,
+  FileCheck,
   Send,
-  Plus,
-  ArrowRight,
-  RotateCcw,
+  Calendar,
+  MapPin,
+  Building2,
+  CheckCircle,
 } from 'lucide-react';
-import { store } from '../../services/store';
-import { ProcurementRequest, Order, Offer } from '../../types';
+import {
+  INITIAL_RFQS,
+  INITIAL_INVENTORY,
+  INITIAL_OFFERS,
+  INITIAL_ORDERS,
+  INITIAL_STOCK_MOVEMENTS,
+  SupplierRFQ,
+  SupplierInventoryItem,
+  SupplierOfferItem,
+  SupplierOrderItem,
+  StockMovement,
+} from './supplierData';
+import { SupplierDashboardTab } from './SupplierDashboardTab';
+import { TenderOpportunitiesTab } from './TenderOpportunitiesTab';
+import { MySparesInventoryTab } from './MySparesInventoryTab';
+import { SubmittedOffersTab } from './SubmittedOffersTab';
+import { ActiveOrdersTab } from './ActiveOrdersTab';
+import { CompanyProfileTab } from './CompanyProfileTab';
+import { SupplierAIAssistantTab } from './SupplierAIAssistantTab';
+import { SupplierSettingsTab } from './SupplierSettingsTab';
+
+export type SupplierTabType =
+  | 'dashboard'
+  | 'opportunities'
+  | 'inventory'
+  | 'offers'
+  | 'orders'
+  | 'profile'
+  | 'assistant'
+  | 'settings';
 
 interface SupplierPortalProps {
   initialTab?: string;
@@ -21,542 +53,651 @@ interface SupplierPortalProps {
 }
 
 export const SupplierPortal: React.FC<SupplierPortalProps> = ({
-  initialTab = 'opportunities',
+  initialTab = 'dashboard',
   onNavigate,
 }) => {
-  const [activeTab, setActiveTab] = useState<'opportunities' | 'inventory' | 'offers' | 'orders'>(
-    initialTab as any || 'opportunities'
-  );
+  // Normalize initialTab from sidebar routes
+  const normalizeTab = (tabStr: string): SupplierTabType => {
+    if (tabStr.includes('inventory')) return 'inventory';
+    if (tabStr.includes('offer')) return 'offers';
+    if (tabStr.includes('order')) return 'orders';
+    if (tabStr.includes('profile')) return 'profile';
+    if (tabStr.includes('opportunity') || tabStr.includes('opportunities')) return 'opportunities';
+    if (tabStr.includes('assistant')) return 'assistant';
+    if (tabStr.includes('settings')) return 'settings';
+    return 'dashboard';
+  };
 
-  const currentUser = store.getCurrentUser();
-  const currentOrg = store.getCurrentOrganization();
-  const suppliers = store.getSuppliers();
-  const currentSupplier = suppliers.find((s) => s.id === currentUser.organizationId) || suppliers[0];
+  const [activeTab, setActiveTab] = useState<SupplierTabType>(normalizeTab(initialTab));
 
-  const state = store.getState();
-  const openRequests = state.procurementRequests.filter((pr) => pr.status === 'OPEN' || pr.status === 'OFFERS_RECEIVED');
-  const myOffers = state.offers.filter((o) => o.supplierId === currentSupplier.id);
-  const myOrders = state.orders.filter((o) => o.supplierId === currentSupplier.id);
-  const myInventory = state.supplierInventory.filter((si) => si.supplierId === currentSupplier.id);
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(normalizeTab(initialTab));
+    }
+  }, [initialTab]);
 
-  // Submit Offer Modal
-  const [selectedPR, setSelectedPR] = useState<ProcurementRequest | null>(null);
+  // Centralized State for ABC Industrial Supplies Ltd Demo
+  const [rfqs, setRfqs] = useState<SupplierRFQ[]>(INITIAL_RFQS);
+  const [inventory, setInventory] = useState<SupplierInventoryItem[]>(INITIAL_INVENTORY);
+  const [offers, setOffers] = useState<SupplierOfferItem[]>(INITIAL_OFFERS);
+  const [orders, setOrders] = useState<SupplierOrderItem[]>(INITIAL_ORDERS);
+  const [movements, setMovements] = useState<StockMovement[]>(INITIAL_STOCK_MOVEMENTS);
+
+  // Modals across tabs
+  const [viewingRfq, setViewingRfq] = useState<SupplierRFQ | null>(null);
+  const [offerRfq, setOfferRfq] = useState<SupplierRFQ | null>(null);
   const [offerForm, setOfferForm] = useState({
-    quantity: 2,
-    unitPrice: 4800,
-    deliveryTimeDays: 7,
-    availableDate: 'Immediate Ex-Stock Kampala',
-    certificationOffered: 'API 682, ISO 9001:2015, Mill Test Cert 3.1',
-    validityDate: '30 Days from submission',
-    notes: 'Seal faces inspected and nitrogen pressure tested prior to field dispatch.',
+    quantity: 6,
+    unitPriceUGX: 2_850_000,
+    leadTimeDays: 14,
+    validityDate: '2026-11-20',
+    certificationOffered: 'API 682 4th Ed, ISO 9001:2015, Mill Test Certificate 3.1',
+    notes: 'Ex-stock Kampala warehouse. Seal faces inspected and nitrogen pressurized.',
   });
 
-  // Delay reporting modal
-  const [delayOrder, setDelayOrder] = useState<Order | null>(null);
-  const [delayReason, setDelayReason] = useState('Customs clearance inspection delay at border post');
-  const [newArrivalDate, setNewArrivalDate] = useState('2026-10-24');
+  // Cross-Module Demo Flow Actions
+  const handleOpenOfferModal = (rfq: SupplierRFQ) => {
+    setOfferRfq(rfq);
+    setOfferForm({
+      quantity: rfq.quantity,
+      unitPriceUGX: rfq.estimatedBudgetUGX ? Math.round(rfq.estimatedBudgetUGX / rfq.quantity) : 2_500_000,
+      leadTimeDays: 14,
+      validityDate: '2026-11-20',
+      certificationOffered: rfq.certificationRequirement || 'API 682, Mill Test 3.1',
+      notes: `Ex-stock Kampala warehouse delivery to ${rfq.deliveryLocation}.`,
+    });
+  };
 
   const handleSubmitOffer = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedPR) return;
+    if (!offerRfq) return;
 
-    store.submitOffer({
-      procurementRequestId: selectedPR.id,
-      supplierId: currentSupplier.id,
-      supplierName: currentSupplier.name,
+    const newOfferId = `OFF-${Math.floor(2035 + Math.random() * 100)}`;
+    const newOffer: SupplierOfferItem = {
+      id: newOfferId,
+      rfqNumber: offerRfq.rfqNumber,
+      materialCode: offerRfq.materialCode,
+      materialName: offerRfq.materialName,
       quantity: Number(offerForm.quantity),
-      unitPrice: Number(offerForm.unitPrice),
-      deliveryTimeDays: Number(offerForm.deliveryTimeDays),
-      availableDate: offerForm.availableDate,
-      certificationOffered: offerForm.certificationOffered,
+      unitPriceUGX: Number(offerForm.unitPriceUGX),
+      leadTimeDays: Number(offerForm.leadTimeDays),
+      totalValueUGX: Number(offerForm.quantity) * Number(offerForm.unitPriceUGX),
+      submittedDate: new Date().toISOString().split('T')[0],
+      status: 'Under Review',
       validityDate: offerForm.validityDate,
+      certificationOffered: offerForm.certificationOffered,
       notes: offerForm.notes,
-    });
+    };
 
-    setSelectedPR(null);
+    setOffers([newOffer, ...offers]);
+
+    // Reserve stock in inventory if available
+    setInventory((prev) =>
+      prev.map((item) => {
+        if (item.materialCode === offerRfq.materialCode) {
+          const qty = Number(offerForm.quantity);
+          const newReserved = item.reservedQuantity + qty;
+          const newAvailableToOffer = Math.max(0, item.availableQuantity - newReserved);
+          return {
+            ...item,
+            reservedQuantity: newReserved,
+            availableToOffer: newAvailableToOffer,
+          };
+        }
+        return item;
+      })
+    );
+
+    // Record movement
+    setMovements((prev) => [
+      {
+        id: `sm-${Date.now()}`,
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        materialCode: offerRfq.materialCode,
+        materialName: offerRfq.materialName,
+        reference: `OFFER-${newOfferId}`,
+        type: 'RESERVE',
+        quantityDelta: -Number(offerForm.quantity),
+        newBalance: Math.max(0, 8 - Number(offerForm.quantity)),
+        reason: `Reserved for commercial offer ${newOfferId} on ${offerRfq.rfqNumber}`,
+      },
+      ...prev,
+    ]);
+
+    setOfferRfq(null);
     setActiveTab('offers');
-    alert(`Proposal submitted to ${selectedPR.facilityName} for tender ${selectedPR.requestNumber}!`);
+    alert(`Quotation ${newOfferId} successfully submitted to ${offerRfq.buyer}!`);
   };
 
-  const handleUpdateOrderStatus = (orderId: string, status: Order['status']) => {
-    store.updateOrderStatus(orderId, status);
+  const handleBuyerAcceptOffer = (offerId: string) => {
+    const target = offers.find((o) => o.id === offerId);
+    if (!target) return;
+
+    // Update offer to accepted
+    setOffers((prev) =>
+      prev.map((o) => (o.id === offerId ? { ...o, status: 'Accepted' as const } : o))
+    );
+
+    // Create active purchase order
+    const newOrdNum = `NX-ORD-${Math.floor(1025 + Math.random() * 50)}`;
+    const newOrder: SupplierOrderItem = {
+      id: newOrdNum,
+      orderNumber: newOrdNum,
+      buyer: 'Demo Oil & Gas Company',
+      materialCode: target.materialCode,
+      materialName: target.materialName,
+      quantity: target.quantity,
+      unitPriceUGX: target.unitPriceUGX,
+      totalValueUGX: target.totalValueUGX,
+      orderDate: new Date().toISOString().split('T')[0],
+      requiredDate: '2026-10-24',
+      status: 'Order Received',
+      expectedDispatch: '2026-10-06',
+      deliveryLocation: 'Central Processing Facility (CPF-1)',
+      notes: `PO issued following commercial tender award for ${target.rfqNumber}.`,
+    };
+
+    setOrders([newOrder, ...orders]);
+    setActiveTab('orders');
+    alert(`Buyer accepted offer ${offerId}! Purchase Order ${newOrdNum} has been issued and queued in Active Orders.`);
   };
 
-  const handleReportDelay = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!delayOrder) return;
-    store.updateOrderStatus(delayOrder.id, delayOrder.status, {
-      delayedReason: delayReason,
-      newArrivalDate,
-    });
-    setDelayOrder(null);
-    alert('Shipment delay notification broadcasted to buyer operations.');
+  const handleWithdrawOffer = (id: string) => {
+    if (confirm('Withdraw this quotation from buyer tender evaluation?')) {
+      setOffers((prev) =>
+        prev.map((o) => (o.id === id ? { ...o, status: 'Withdrawn' as const } : o))
+      );
+    }
   };
 
-  const handleRespondCancellation = (orderId: string, decision: 'ACCEPTED' | 'DECLINED') => {
-    store.respondToCancellation(orderId, decision, decision === 'ACCEPTED' ? 'Cancellation accepted; restocking fee waived.' : 'Items already packaged and in dispatch transit.');
+  const handleUpdateOrderStatus = (
+    orderId: string,
+    nextStatus: SupplierOrderItem['status'],
+    extra?: { trackingNumber?: string; carrier?: string; notes?: string }
+  ) => {
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          return {
+            ...o,
+            status: nextStatus,
+            ...(extra?.trackingNumber ? { trackingNumber: extra.trackingNumber } : {}),
+            ...(extra?.carrier ? { carrier: extra.carrier } : {}),
+            ...(extra?.notes ? { notes: extra.notes } : {}),
+          };
+        }
+        return o;
+      })
+    );
+
+    // If marked Delivered, decrement physical stock in inventory!
+    if (nextStatus === 'Delivered') {
+      const ord = orders.find((o) => o.id === orderId);
+      if (ord) {
+        setInventory((prev) =>
+          prev.map((item) => {
+            if (item.materialCode === ord.materialCode) {
+              const newAvailable = Math.max(0, item.availableQuantity - ord.quantity);
+              const newReserved = Math.max(0, item.reservedQuantity - ord.quantity);
+              return {
+                ...item,
+                availableQuantity: newAvailable,
+                reservedQuantity: newReserved,
+                availableToOffer: Math.max(0, newAvailable - newReserved),
+                lastUpdated: new Date().toISOString().split('T')[0],
+              };
+            }
+            return item;
+          })
+        );
+
+        setMovements((prev) => [
+          {
+            id: `sm-${Date.now()}`,
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+            materialCode: ord.materialCode,
+            materialName: ord.materialName,
+            reference: ord.orderNumber,
+            type: 'DISPATCH',
+            quantityDelta: -ord.quantity,
+            newBalance: Math.max(0, 12 - ord.quantity),
+            reason: `Final delivery accepted on site for ${ord.orderNumber}`,
+          },
+          ...prev,
+        ]);
+      }
+    }
   };
+
+  const handleReportDelay = (orderId: string, delayReason: string, newDate: string) => {
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id === orderId) {
+          return {
+            ...o,
+            expectedDispatch: newDate,
+            notes: `Delay Reported: ${delayReason}. Expected arrival: ${newDate}`,
+          };
+        }
+        return o;
+      })
+    );
+    alert(`Transit delay alert broadcasted to Demo Oil & Gas Company logistics coordinators.`);
+  };
+
+  const handleAddInventory = (newItem: Omit<SupplierInventoryItem, 'id' | 'lastUpdated'>) => {
+    const item: SupplierInventoryItem = {
+      ...newItem,
+      id: `inv-${Date.now()}`,
+      lastUpdated: new Date().toISOString().split('T')[0],
+    };
+    setInventory([item, ...inventory]);
+    setMovements((prev) => [
+      {
+        id: `sm-${Date.now()}`,
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        materialCode: item.materialCode,
+        materialName: item.materialName,
+        reference: 'INITIAL-STOCK',
+        type: 'ADD',
+        quantityDelta: item.availableQuantity,
+        newBalance: item.availableQuantity,
+        reason: 'New spare material line registered in supplier warehouse',
+      },
+      ...prev,
+    ]);
+  };
+
+  const handleAdjustQuantity = (id: string, delta: number, reason: string) => {
+    setInventory((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const newQty = Math.max(0, item.availableQuantity + delta);
+          const newOfferable = Math.max(0, newQty - item.reservedQuantity);
+          return {
+            ...item,
+            availableQuantity: newQty,
+            availableToOffer: newOfferable,
+            lastUpdated: new Date().toISOString().split('T')[0],
+          };
+        }
+        return item;
+      })
+    );
+
+    const target = inventory.find((i) => i.id === id);
+    if (target) {
+      setMovements((prev) => [
+        {
+          id: `sm-${Date.now()}`,
+          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          materialCode: target.materialCode,
+          materialName: target.materialName,
+          reference: 'STOCK-ADJUST',
+          type: delta > 0 ? 'ADD' : 'DISPATCH',
+          quantityDelta: delta,
+          newBalance: Math.max(0, target.availableQuantity + delta),
+          reason,
+        },
+        ...prev,
+      ]);
+    }
+  };
+
+  const handleReserveStock = (id: string, qty: number, reason: string) => {
+    setInventory((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const newReserved = item.reservedQuantity + qty;
+          const newOfferable = Math.max(0, item.availableQuantity - newReserved);
+          return {
+            ...item,
+            reservedQuantity: newReserved,
+            availableToOffer: newOfferable,
+            lastUpdated: new Date().toISOString().split('T')[0],
+          };
+        }
+        return item;
+      })
+    );
+
+    const target = inventory.find((i) => i.id === id);
+    if (target) {
+      setMovements((prev) => [
+        {
+          id: `sm-${Date.now()}`,
+          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          materialCode: target.materialCode,
+          materialName: target.materialName,
+          reference: 'MANUAL-RESERVE',
+          type: 'RESERVE',
+          quantityDelta: -qty,
+          newBalance: Math.max(0, target.availableToOffer - qty),
+          reason,
+        },
+        ...prev,
+      ]);
+    }
+  };
+
+  // Tab definitions with exact enterprise design requirements
+  const tabs = [
+    { id: 'dashboard', label: 'Supplier Dashboard', icon: LayoutDashboard },
+    { id: 'opportunities', label: 'Tender Opportunities', icon: ShoppingBag, count: rfqs.length },
+    { id: 'inventory', label: 'My Spares Inventory', icon: Boxes, count: inventory.length },
+    { id: 'offers', label: 'Submitted Offers', icon: FileText, count: offers.length },
+    { id: 'orders', label: 'Active Orders & Dispatch', icon: Truck, count: orders.length },
+    { id: 'profile', label: 'Company Profile & NSD', icon: Award },
+    { id: 'assistant', label: 'AI Assistant', icon: Bot },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Supplier Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-teal-950/40 p-5 rounded-2xl border border-teal-700/50">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 font-bold uppercase tracking-wider border border-teal-500/30">
-              Supplier Partner Portal
-            </span>
-            <span className="text-xs text-teal-200/60">•</span>
-            <span className="text-xs text-teal-200/80">{currentSupplier.name} ({currentSupplier.city}, {currentSupplier.country})</span>
-          </div>
-          <h1 className="text-xl font-extrabold text-white tracking-tight mt-1">
-            Vendor Operations &amp; Dispatch Console
-          </h1>
-          <p className="text-xs text-slate-300 mt-1">
-            Respond to tender opportunities, manage regional spares, and broadcast real-time delivery milestones.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60 text-right">
-            <div className="text-[10px] uppercase text-slate-400 font-semibold">On-Time Performance</div>
-            <div className="text-base font-black text-emerald-400">{currentSupplier.onTimeDeliveryRate}%</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Supplier Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-2 text-xs font-semibold">
-        <button
-          onClick={() => setActiveTab('opportunities')}
-          className={`px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${
-            activeTab === 'opportunities'
-              ? 'bg-slate-800 text-teal-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <ShoppingBag className="w-4 h-4" />
-          <span>Tender Opportunities ({openRequests.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('inventory')}
-          className={`px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${
-            activeTab === 'inventory'
-              ? 'bg-slate-800 text-teal-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Boxes className="w-4 h-4" />
-          <span>My Spares Catalog ({myInventory.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('offers')}
-          className={`px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${
-            activeTab === 'offers'
-              ? 'bg-slate-800 text-teal-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <FileText className="w-4 h-4" />
-          <span>Submitted Offers ({myOffers.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('orders')}
-          className={`px-4 py-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2 ${
-            activeTab === 'orders'
-              ? 'bg-slate-800 text-teal-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Truck className="w-4 h-4" />
-          <span>Active Purchase Orders ({myOrders.length})</span>
-        </button>
-      </div>
-
-      {/* Tab: Opportunities */}
-      {activeTab === 'opportunities' && (
-        <div className="space-y-4">
-          <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
-            <span className="text-slate-300">
-              Active RFQs &amp; Critical Spare Inquiries issued by client operating companies.
-            </span>
-          </div>
-
-          <div className="grid gap-4">
-            {openRequests.map((pr) => {
-              const myExistingOffer = myOffers.find((o) => o.procurementRequestId === pr.id);
-
-              return (
-                <div key={pr.id} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-teal-500/40 transition-colors">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-amber-400">{pr.requestNumber}</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold uppercase">
-                          {pr.priority} Priority
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-white text-base mt-1">{pr.materialName} ({pr.materialCode})</h3>
-                      <p className="text-xs text-slate-400">Buyer Facility: {pr.facilityName} • Need by: {new Date(pr.requiredDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                    </div>
-
-                    <div className="text-right">
-                      <div className="text-[10px] uppercase text-slate-400">Required Quantity</div>
-                      <div className="text-xl font-black text-white">{pr.quantity} Units</div>
-                    </div>
-                  </div>
-
-                  <div className="py-3 text-xs text-slate-300 space-y-2">
-                    <div>
-                      <span className="font-semibold text-slate-400 block text-[10px] uppercase">Specification:</span>
-                      <p className="mt-0.5">{pr.specification}</p>
-                    </div>
-                    <div>
-                      <span className="font-semibold text-slate-400 block text-[10px] uppercase">Mandatory Certifications:</span>
-                      <p className="mt-0.5">{pr.certificationRequirement}</p>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-400">
-                      Destination: {pr.deliveryLocation}
-                    </span>
-
-                    {myExistingOffer ? (
-                      <span className="px-3 py-1 rounded bg-teal-500/20 text-teal-300 text-xs font-bold">
-                        Offer Submitted (${myExistingOffer.totalPrice.toLocaleString()})
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setSelectedPR(pr);
-                          setOfferForm({ ...offerForm, quantity: pr.quantity });
-                        }}
-                        className="px-4 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-950 flex items-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Submit Priced Offer</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Tab: Spares Catalog */}
-      {activeTab === 'inventory' && (
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between text-xs">
-            <span className="font-bold text-white uppercase tracking-wider">Stocked Spares Registry</span>
-            <span className="text-slate-400">Ex-Stock Regional Depots</span>
-          </div>
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/60 border-b border-slate-800 text-[10px] uppercase text-slate-400">
-              <tr>
-                <th className="p-3">Material Name &amp; Code</th>
-                <th className="p-3 text-center">Available Stock</th>
-                <th className="p-3 text-center">Standard Unit Price</th>
-                <th className="p-3">Turnaround Lead Time</th>
-                <th className="p-3">Warehouse Location</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {myInventory.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-800/40">
-                  <td className="p-3">
-                    <div className="font-bold text-slate-100">{item.materialName}</div>
-                    <div className="font-mono text-[10px] text-slate-400">{item.category}</div>
-                  </td>
-                  <td className="p-3 text-center font-mono font-bold text-emerald-400">
-                    {item.quantityAvailable} units
-                  </td>
-                  <td className="p-3 text-center font-mono font-bold text-slate-200">
-                    ${item.price.toLocaleString()} {item.currency}
-                  </td>
-                  <td className="p-3 font-mono text-amber-300">
-                    {item.leadTimeDays} Calendar Days
-                  </td>
-                  <td className="p-3 text-slate-400">
-                    {item.location}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Tab: Submitted Offers */}
-      {activeTab === 'offers' && (
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
-          <div className="p-4 border-b border-slate-800 text-xs font-bold text-white uppercase tracking-wider">
-            Commercial Offers History
-          </div>
-          <div className="divide-y divide-slate-800/60">
-            {myOffers.map((o) => (
-              <div key={o.id} className="p-4 flex items-center justify-between text-xs">
-                <div>
-                  <div className="font-bold text-slate-100 text-sm">Offer for Tender {o.procurementRequestId}</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    Qty: {o.quantity} units • Delivery: {o.deliveryTimeDays} days • Cert: {o.certificationOffered}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-base font-black text-white font-mono">${o.totalPrice.toLocaleString()} {o.currency}</div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase mt-1 inline-block ${
-                    o.status === 'ACCEPTED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
-                  }`}>
-                    {o.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Tab: Orders & Dispatch */}
-      {activeTab === 'orders' && (
-        <div className="space-y-4">
-          {myOrders.map((ord) => {
-            const hasCancellationRequest = ord.status === 'CANCELLATION REQUESTED';
+      {/* Enterprise Tabs Navigation Bar */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-2 shadow-sm">
+        <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
 
             return (
-              <div key={ord.id} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
-                  <div>
-                    <span className="font-mono text-xs font-bold text-teal-400">{ord.orderNumber}</span>
-                    <h3 className="font-bold text-white text-base mt-0.5">{ord.materialName}</h3>
-                    <p className="text-xs text-slate-400">Buyer: {ord.organizationName} • Qty: {ord.quantity} units</p>
-                  </div>
-
-                  <div className="text-right">
-                    <span className={`px-2.5 py-0.5 rounded text-xs font-bold uppercase ${
-                      ord.status === 'DELIVERED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'
-                    }`}>
-                      {ord.status}
-                    </span>
-                    <div className="font-mono font-bold text-white text-sm mt-1">${ord.totalPrice.toLocaleString()} {ord.currency}</div>
-                  </div>
-                </div>
-
-                {/* Cancellation Request Alert (Section 80) */}
-                {hasCancellationRequest && (
-                  <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-600/50 text-xs space-y-2">
-                    <div className="flex items-center gap-2 text-rose-300 font-bold">
-                      <AlertTriangle className="w-4 h-4 text-rose-400" />
-                      <span>Buyer Requested Order Cancellation</span>
-                    </div>
-                    <p className="text-slate-300">
-                      Reason given: "{ord.cancellationDetails?.reason || 'Schedule adjustment'}"
-                    </p>
-                    <div className="pt-2 flex items-center gap-2">
-                      <button
-                        onClick={() => handleRespondCancellation(ord.id, 'ACCEPTED')}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer"
-                      >
-                        Accept Cancellation
-                      </button>
-                      <button
-                        onClick={() => handleRespondCancellation(ord.id, 'DECLINED')}
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold cursor-pointer"
-                      >
-                        Decline (Already Dispatched)
-                      </button>
-                    </div>
-                  </div>
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as SupplierTabType)}
+                className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? 'bg-[#0A78B5] text-white border border-[#0A78B5] shadow-sm'
+                    : 'bg-transparent text-[#082746] dark:text-slate-200 hover:bg-[#F4F8FA] dark:hover:bg-slate-800 border border-transparent'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#123B63] dark:text-slate-400'}`} />
+                <span>{tab.label}</span>
+                {typeof tab.count === 'number' && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                      isActive
+                        ? 'bg-white/20 text-white'
+                        : 'bg-slate-200 dark:bg-slate-800 text-[#082746] dark:text-slate-300'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
                 )}
-
-                {/* Dispatch Controls */}
-                <div className="pt-2 flex flex-wrap items-center justify-between gap-3 text-xs">
-                  <div className="text-slate-400">
-                    Tracking Ref: <span className="font-mono text-slate-200 font-bold">{ord.deliveryDetails.trackingRef}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setDelayOrder(ord)}
-                      className="px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800 text-xs font-semibold cursor-pointer"
-                    >
-                      Report Shipment Delay
-                    </button>
-                    <button
-                      onClick={() => handleUpdateOrderStatus(ord.id, 'PREPARING')}
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold cursor-pointer"
-                    >
-                      Staging / Prep
-                    </button>
-                    <button
-                      onClick={() => handleUpdateOrderStatus(ord.id, 'IN DELIVERY')}
-                      className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold cursor-pointer"
-                    >
-                      Dispatch Transit
-                    </button>
-                    <button
-                      onClick={() => handleUpdateOrderStatus(ord.id, 'DELIVERED')}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer"
-                    >
-                      Delivered at Gate
-                    </button>
-                  </div>
-                </div>
-              </div>
+              </button>
             );
           })}
         </div>
+      </div>
+
+      {/* Dynamic Tab Workspace */}
+      {activeTab === 'dashboard' && (
+        <SupplierDashboardTab
+          rfqs={rfqs}
+          orders={orders}
+          onOpenRfqModal={setViewingRfq}
+          onOpenOfferModal={handleOpenOfferModal}
+          onNavigateTab={(t) => setActiveTab(t as SupplierTabType)}
+        />
       )}
 
-      {/* Submit Offer Modal */}
-      {selectedPR && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Send className="w-5 h-5 text-teal-400" />
-                <span>Submit Supplier Proposal</span>
-              </h3>
-              <button onClick={() => setSelectedPR(null)} className="text-slate-400 hover:text-white">✕</button>
+      {activeTab === 'opportunities' && (
+        <TenderOpportunitiesTab
+          rfqs={rfqs}
+          onOpenRfqModal={setViewingRfq}
+          onOpenOfferModal={handleOpenOfferModal}
+        />
+      )}
+
+      {activeTab === 'inventory' && (
+        <MySparesInventoryTab
+          inventory={inventory}
+          movements={movements}
+          onAddInventory={handleAddInventory}
+          onAdjustQuantity={handleAdjustQuantity}
+          onReserveStock={handleReserveStock}
+        />
+      )}
+
+      {activeTab === 'offers' && (
+        <SubmittedOffersTab
+          offers={offers}
+          onWithdrawOffer={handleWithdrawOffer}
+          onBuyerAcceptOffer={handleBuyerAcceptOffer}
+        />
+      )}
+
+      {activeTab === 'orders' && (
+        <ActiveOrdersTab
+          orders={orders}
+          onUpdateOrderStatus={handleUpdateOrderStatus}
+          onReportDelay={handleReportDelay}
+        />
+      )}
+
+      {activeTab === 'profile' && <CompanyProfileTab />}
+
+      {activeTab === 'assistant' && (
+        <SupplierAIAssistantTab
+          rfqs={rfqs}
+          inventory={inventory}
+          orders={orders}
+          onNavigateTab={(t) => setActiveTab(t as SupplierTabType)}
+        />
+      )}
+
+      {activeTab === 'settings' && <SupplierSettingsTab />}
+
+      {/* Modal: View Detailed RFQ */}
+      {viewingRfq && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5 text-[#0B78B5]" />
+                <h3 className="text-base font-bold text-[#123B63] dark:text-white">
+                  Tender Specifications: {viewingRfq.rfqNumber}
+                </h3>
+              </div>
+              <button
+                onClick={() => setViewingRfq(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <form onSubmit={handleSubmitOffer} className="space-y-4 pt-4 text-xs">
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <div className="font-bold text-white">{selectedPR.materialName}</div>
-                <div className="text-[11px] text-slate-400">Tender: {selectedPR.requestNumber} • Req Date: {selectedPR.requiredDate}</div>
+            <div className="space-y-3.5 text-xs">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-[#0A78B5] dark:text-sky-400">
+                    {viewingRfq.rfqNumber}
+                  </span>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-600 text-white">
+                    {viewingRfq.criticality}
+                  </span>
+                </div>
+                <h4 className="text-sm font-black text-[#082746] dark:text-white">
+                  {viewingRfq.materialName}
+                </h4>
+                <div className="text-[11px] text-[#64748B] dark:text-slate-400">
+                  Item Code: {viewingRfq.materialCode} • Category: {viewingRfq.category}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 py-1">
+                <div>
+                  <span className="text-[#64748B] block">Required Quantity</span>
+                  <span className="font-bold text-[#082746] dark:text-white font-mono text-sm">
+                    {viewingRfq.quantity} {viewingRfq.unit}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[#64748B] block">Required On-Site Date</span>
+                  <span className="font-bold text-rose-600 dark:text-rose-400 text-sm">
+                    {viewingRfq.requiredDate}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[#64748B] block">Buyer Organization</span>
+                  <span className="font-bold text-[#082746] dark:text-white">{viewingRfq.buyer}</span>
+                </div>
+                <div>
+                  <span className="text-[#64748B] block">Delivery Location</span>
+                  <span className="font-bold text-[#082746] dark:text-white">{viewingRfq.deliveryLocation}</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
+                <span className="font-bold text-[#082746] dark:text-sky-300 block">Technical Requirements &amp; Specs:</span>
+                <p className="text-[#334155] dark:text-slate-300 leading-relaxed">{viewingRfq.specifications}</p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-[#F4F8FA] dark:bg-sky-950/40 border border-[#0A78B5]/30 space-y-1">
+                <span className="font-bold text-[#082746] dark:text-sky-300 block">Required Certifications:</span>
+                <p className="text-[#082746] dark:text-slate-200 font-medium">{viewingRfq.certificationRequirement}</p>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-[#64748B] pt-1">
+                <span>Closing Date: <strong className="text-[#082746] dark:text-white">{viewingRfq.closingDate}</strong></span>
+                <span className="flex items-center gap-1.5">Tender Status: <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#32B86A] text-white uppercase">{viewingRfq.status}</span></span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+              <button
+                onClick={() => setViewingRfq(null)}
+                className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#082746] font-semibold cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  const r = viewingRfq;
+                  setViewingRfq(null);
+                  handleOpenOfferModal(r);
+                }}
+                className="px-5 py-2 rounded-lg bg-[#0A78B5] hover:bg-[#086396] text-white font-bold cursor-pointer shadow-sm"
+              >
+                Prepare &amp; Submit Offer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Submit Commercial Offer */}
+      {offerRfq && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-[#0A78B5]" />
+                <h3 className="text-base font-bold text-[#082746] dark:text-white">
+                  Submit Proposal: {offerRfq.rfqNumber}
+                </h3>
+              </div>
+              <button
+                onClick={() => setOfferRfq(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitOffer} className="space-y-3.5 text-xs">
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-0.5">
+                <div className="font-bold text-[#082746] dark:text-white">{offerRfq.materialName}</div>
+                <div className="text-[11px] text-[#64748B]">Buyer: {offerRfq.buyer} • Required by: {offerRfq.requiredDate}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Unit Price (USD) *</label>
+                  <label className="block text-[#082746] dark:text-slate-200 font-bold mb-1">Quantity Offered *</label>
                   <input
                     type="number"
                     min="1"
                     required
-                    value={offerForm.unitPrice}
-                    onChange={(e) => setOfferForm({ ...offerForm, unitPrice: Number(e.target.value) })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white font-mono font-bold"
+                    value={offerForm.quantity}
+                    onChange={(e) => setOfferForm({ ...offerForm, quantity: Number(e.target.value) })}
+                    className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-[#082746] dark:text-white font-mono font-bold focus:border-[#0A78B5] focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Delivery Lead Time (Days) *</label>
+                  <label className="block text-[#082746] dark:text-slate-200 font-bold mb-1">Lead Time (Days) *</label>
                   <input
                     type="number"
                     min="1"
                     required
-                    value={offerForm.deliveryTimeDays}
-                    onChange={(e) => setOfferForm({ ...offerForm, deliveryTimeDays: Number(e.target.value) })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white font-mono font-bold text-teal-300"
+                    value={offerForm.leadTimeDays}
+                    onChange={(e) => setOfferForm({ ...offerForm, leadTimeDays: Number(e.target.value) })}
+                    className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-[#082746] dark:text-white font-mono font-bold focus:border-[#0A78B5] focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Stock Availability</label>
+                <label className="block text-[#082746] dark:text-slate-200 font-bold mb-1">Unit Price (UGX) *</label>
                 <input
-                  type="text"
-                  value={offerForm.availableDate}
-                  onChange={(e) => setOfferForm({ ...offerForm, availableDate: e.target.value })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white"
+                  type="number"
+                  min="1000"
+                  step="1000"
+                  required
+                  value={offerForm.unitPriceUGX}
+                  onChange={(e) => setOfferForm({ ...offerForm, unitPriceUGX: Number(e.target.value) })}
+                  className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-[#082746] dark:text-white font-mono font-bold focus:border-[#0A78B5] focus:outline-none"
                 />
+                <span className="text-[11px] text-slate-500 mt-1 block">
+                  Total Contract Value: <strong className="text-[#0A78B5] font-mono font-bold">UGX {(offerForm.quantity * offerForm.unitPriceUGX).toLocaleString()}</strong>
+                </span>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Quality Certifications Included</label>
+                <label className="block text-[#082746] dark:text-slate-200 font-bold mb-1">Certification Dossier Offered *</label>
                 <input
                   type="text"
+                  required
                   value={offerForm.certificationOffered}
                   onChange={(e) => setOfferForm({ ...offerForm, certificationOffered: e.target.value })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white"
+                  className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-[#082746] dark:text-white focus:border-[#0A78B5] focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Notes &amp; Commercial Terms</label>
+                <label className="block text-[#082746] dark:text-slate-200 font-bold mb-1">Proposal Validity Date *</label>
+                <input
+                  type="date"
+                  required
+                  value={offerForm.validityDate}
+                  onChange={(e) => setOfferForm({ ...offerForm, validityDate: e.target.value })}
+                  className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-[#082746] dark:text-white focus:border-[#0A78B5] focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[#082746] dark:text-slate-200 font-bold mb-1">Commercial / Technical Notes</label>
                 <textarea
                   rows={2}
                   value={offerForm.notes}
                   onChange={(e) => setOfferForm({ ...offerForm, notes: e.target.value })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white"
+                  className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-[#082746] dark:text-white focus:border-[#0A78B5] focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setSelectedPR(null)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 cursor-pointer"
+                  onClick={() => setOfferRfq(null)}
+                  className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#082746] font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold cursor-pointer"
+                  className="px-5 py-2 rounded-lg bg-[#0A78B5] hover:bg-[#086396] text-white font-bold cursor-pointer shadow-sm flex items-center gap-1.5"
                 >
-                  Submit Official Offer
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Report Delay Modal */}
-      {delayOrder && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-rose-400" />
-                <span>Report Shipment Transit Delay</span>
-              </h3>
-              <button onClick={() => setDelayOrder(null)} className="text-slate-400 hover:text-white">✕</button>
-            </div>
-
-            <form onSubmit={handleReportDelay} className="space-y-4 pt-4 text-xs">
-              <p className="text-slate-300">
-                Reporting a delay on <strong>{delayOrder.orderNumber}</strong> ({delayOrder.materialName}).
-              </p>
-
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Cause of Delay *</label>
-                <textarea
-                  rows={2}
-                  required
-                  value={delayReason}
-                  onChange={(e) => setDelayReason(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-300 font-semibold mb-1">Revised Estimated Arrival Date *</label>
-                <input
-                  type="date"
-                  required
-                  value={newArrivalDate}
-                  onChange={(e) => setNewArrivalDate(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white font-mono"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setDelayOrder(null)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold cursor-pointer"
-                >
-                  Transmit Delay Alert
+                  <Send className="w-3.5 h-3.5 text-white" />
+                  <span>Transmit Commercial Offer</span>
                 </button>
               </div>
             </form>

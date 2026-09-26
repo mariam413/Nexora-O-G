@@ -87,7 +87,7 @@ export const NexoraLogo: React.FC<NexoraLogoProps> = ({
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <span
-              className={`${currentSize.text} font-black tracking-wider text-slate-900 dark:text-white leading-none font-sans`}
+              className={`${currentSize.text} font-black tracking-wider text-sky-600 dark:text-sky-400 leading-none font-sans`}
             >
               NEXORA
             </span>

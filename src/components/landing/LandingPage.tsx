@@ -112,7 +112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <span>Industrial Multi-Tenant Decision Intelligence Layer</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-100 tracking-tight leading-tight max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-6xl font-extrabold text-sky-600 dark:text-sky-400 tracking-tight leading-tight max-w-4xl mx-auto">
             AI-Powered Critical Materials &amp; Procurement Intelligence
           </h1>
 
@@ -181,7 +181,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/20 text-xs font-semibold text-sky-500 mb-2">
             <span>Critical Asset &amp; Infrastructure Telemetry</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-sky-600 dark:text-sky-400">
             Industrial Integrity Across Every Energy Node
           </h2>
           <p className="text-sm text-slate-400 max-w-2xl mx-auto mt-2">
@@ -206,7 +206,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
             <div className="p-6 flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-bold text-slate-100">24/7 Digital Control Command</h3>
+                <h3 className="text-lg font-bold text-sky-600 dark:text-sky-300">24/7 Digital Control Command</h3>
                 <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                   Real-time multi-facility telemetry monitoring Kingfisher, Tilenga, and CPF-1 extraction nodes with automated shortage detection.
                 </p>
@@ -234,7 +234,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
             <div className="p-6 flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-bold text-slate-100">Subsea Choke &amp; Valve Health</h3>
+                <h3 className="text-lg font-bold text-sky-600 dark:text-sky-300">Subsea Choke &amp; Valve Health</h3>
                 <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                   Precision maintenance records, API 682 seal wear telemetry, and mechanical failure prediction before safety buffers collapse.
                 </p>
@@ -262,7 +262,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
             <div className="p-6 flex-1 flex flex-col justify-between">
               <div>
-                <h3 className="text-lg font-bold text-slate-100">Multi-Warehouse Spares Depot</h3>
+                <h3 className="text-lg font-bold text-sky-600 dark:text-sky-300">Multi-Warehouse Spares Depot</h3>
                 <p className="text-xs text-slate-400 mt-2 leading-relaxed">
                   Multi-tier bin location tracking, FIFO &amp; weighted-average valuation, and rapid dispatch across East African operational corridors.
                 </p>
@@ -280,7 +280,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section className="py-20 max-w-6xl mx-auto px-6">
         <div className="text-center mb-14">
           <h2 className="text-xs font-bold uppercase tracking-widest text-sky-400">Core Value Architecture</h2>
-          <p className="text-2xl sm:text-3xl font-extrabold text-white mt-1">From Reactive Purchasing to Predictive Readiness</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-sky-600 dark:text-sky-400 mt-1">From Reactive Purchasing to Predictive Readiness</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -289,7 +289,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <ShieldAlert className="w-6 h-6" />
             </div>
             <span className="text-xs font-bold uppercase tracking-wider text-sky-400">01. PREDICT</span>
-            <h3 className="text-xl font-bold text-white mt-2 mb-3">Identify Potential Shortages</h3>
+            <h3 className="text-xl font-bold text-sky-600 dark:text-sky-300 mt-2 mb-3">Identify Potential Shortages</h3>
             <p className="text-sm text-slate-300 leading-relaxed flex-1">
               Connect upcoming scheduled maintenance with warehouse inventory and lead times. Spot critical buffer breaches weeks before equipment shutdowns.
             </p>
@@ -304,7 +304,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <Truck className="w-6 h-6" />
             </div>
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">02. CONNECT</span>
-            <h3 className="text-xl font-bold text-white mt-2 mb-3">Target Qualified Suppliers</h3>
+            <h3 className="text-xl font-bold text-sky-600 dark:text-sky-300 mt-2 mb-3">Target Qualified Suppliers</h3>
             <p className="text-sm text-slate-300 leading-relaxed flex-1">
               Transparently evaluate suppliers based on verified certifications (API 682, ISO 9001), local stock availability, and historical on-time delivery.
             </p>
@@ -319,7 +319,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <Cpu className="w-6 h-6" />
             </div>
             <span className="text-xs font-bold uppercase tracking-wider text-sky-400">03. DECIDE</span>
-            <h3 className="text-xl font-bold text-white mt-2 mb-3">Explainable AI Decision Support</h3>
+            <h3 className="text-xl font-bold text-sky-600 dark:text-sky-300 mt-2 mb-3">Explainable AI Decision Support</h3>
             <p className="text-sm text-slate-300 leading-relaxed flex-1">
               Every recommendation explains What Was Found, Why It Matters, and Recommended Actions with explicit confidence ratings and data completeness.
             </p>
@@ -337,7 +337,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div>
-                <h3 className="text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-sky-600 dark:text-sky-300">
                   {modalType === 'BUYER' ? 'Select Company User Role' : modalType === 'SUPPLIER' ? 'Select Supplier Account' : 'Platform Super Admin'}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -360,7 +360,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-sm text-slate-100">Sarah Nalwanga</div>
+                      <div className="font-bold text-sm text-sky-600 dark:text-sky-300">Sarah Nalwanga</div>
                       <div className="text-xs text-amber-400 font-medium">Organization Admin (Demo Oil &amp; Gas Co)</div>
                       <div className="text-[11px] text-slate-400 mt-1">Full control over facilities, materials, inventory, and risk configuration.</div>
                     </div>
@@ -372,7 +372,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-sm text-slate-100">David Okello</div>
+                      <div className="font-bold text-sm text-sky-600 dark:text-sky-300">David Okello</div>
                       <div className="text-xs text-emerald-400 font-medium">Procurement Officer</div>
                       <div className="text-[11px] text-slate-400 mt-1">Issue tender requests, compare supplier offers, confirm purchase orders.</div>
                     </div>
@@ -384,7 +384,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-sm text-slate-100">Robert Mugabe</div>
+                      <div className="font-bold text-sm text-sky-600 dark:text-sky-300">Robert Mugabe</div>
                       <div className="text-xs text-blue-400 font-medium">Inventory Officer</div>
                       <div className="text-[11px] text-slate-400 mt-1">Record physical usage, stock additions, warehouse transfers, and receipts.</div>
                     </div>
@@ -396,7 +396,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-sm text-slate-100">Eng. Patrick Kato</div>
+                      <div className="font-bold text-sm text-sky-600 dark:text-sky-300">Eng. Patrick Kato</div>
                       <div className="text-xs text-amber-400 font-medium">Maintenance Officer</div>
                       <div className="text-[11px] text-slate-400 mt-1">Schedule equipment work orders, define material specs, track readiness.</div>
                     </div>
@@ -408,7 +408,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-sm text-slate-100">Diana Tumwine</div>
+                      <div className="font-bold text-sm text-sky-600 dark:text-sky-300">Diana Tumwine</div>
                       <div className="text-xs text-purple-400 font-medium">Management / Executive Viewer</div>
                       <div className="text-[11px] text-slate-400 mt-1">High-level risk heatmaps, AI intelligence briefings, and supplier audit.</div>
                     </div>
@@ -424,7 +424,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-sm text-slate-100">James Mukasa</div>
+                      <div className="font-bold text-sm text-sky-600 dark:text-sky-300">James Mukasa</div>
                       <div className="text-xs text-teal-400 font-medium">ABC Industrial Supplies Ltd (Supplier Admin)</div>
                       <div className="text-[11px] text-slate-400 mt-1">Review tender opportunities, submit priced offers, dispatch orders.</div>
                     </div>
@@ -436,7 +436,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-sm text-slate-100">Grace Kyomugisha</div>
+                      <div className="font-bold text-sm text-sky-600 dark:text-sky-300">Grace Kyomugisha</div>
                       <div className="text-xs text-teal-400 font-medium">East Africa Mechanical Solutions (Supplier Rep)</div>
                       <div className="text-[11px] text-slate-400 mt-1">Local regional stockist with fast 7-day turnaround capabilities.</div>
                     </div>
@@ -451,7 +451,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   className="w-full text-left p-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 flex items-center justify-between cursor-pointer transition-colors"
                 >
                   <div>
-                    <div className="font-bold text-sm text-slate-100">Marcus Vance</div>
+                    <div className="font-bold text-sm text-sky-600 dark:text-sky-300">Marcus Vance</div>
                     <div className="text-xs text-rose-400 font-medium">NEXORA Platform Super Admin</div>
                     <div className="text-[11px] text-slate-400 mt-1">Manage tenant organizations, platform AI configuration, and system telemetry.</div>
                   </div>

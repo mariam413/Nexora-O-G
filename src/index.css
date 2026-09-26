@@ -84,14 +84,91 @@ html.dark {
   --color-slate-500: #64748b;
   --color-slate-400: #94a3b8;
   --color-slate-300: #cbd5e1;
-  --color-slate-200: #e2e8f0;
-  --color-slate-100: #f8fafc;
-  --color-slate-50: #ffffff;
+  --color-slate-200: #bae6fd;
+  --color-slate-100: #38bdf8; /* Luminous Light Blue (was #f8fafc) */
+  --color-slate-50: #7dd3fc;  /* Bright Light Blue (was #ffffff) */
 
   --color-amber-400: #38bdf8;
   --color-amber-500: #0ea5e9;
   --color-orange-400: #4ade80;
   --color-orange-500: #22c55e;
+}
+
+/* ============================================================
+   NEXORA O&G ENTERPRISE COLOR SYSTEM & ACCESSIBILITY CONTRAST
+   ============================================================ */
+
+/* Primary brand enterprise accents */
+:root {
+  --nexora-navy: #082746;
+  --nexora-blue: #0A78B5;
+  --nexora-teal: #00A6A6;
+  --nexora-green: #32B86A;
+  --nexora-white: #FFFFFF;
+  --nexora-light-bg: #F4F8FA;
+  --nexora-nav-text: #082746;
+  --nexora-active-text: #FFFFFF;
+  --nexora-active-bg: #0A78B5;
+}
+
+/* Ensure buttons with blue, teal, green, dark navy, or gradient backgrounds ALWAYS have readable white text & icons */
+button[class*="bg-[#0A78B5]"],
+button[class*="bg-[#0B78B5]"],
+button[class*="bg-[#00A6A6]"],
+button[class*="bg-[#32B86A]"],
+button[class*="bg-[#082746]"],
+button[class*="bg-[#123B63]"],
+button[class*="from-[#0A78B5]"],
+button[class*="from-sky-500"],
+button[class*="from-[#082746]"],
+button[class*="bg-sky-600"],
+button[class*="bg-teal-600"],
+button[class*="bg-emerald-600"],
+.btn-primary,
+.bg-primary-btn {
+  color: #ffffff !important;
+}
+
+button[class*="bg-[#0A78B5]"] svg,
+button[class*="bg-[#0B78B5]"] svg,
+button[class*="bg-[#00A6A6]"] svg,
+button[class*="bg-[#32B86A]"] svg,
+button[class*="bg-[#082746]"] svg,
+button[class*="bg-[#123B63]"] svg,
+button[class*="from-[#0A78B5]"] svg,
+button[class*="from-sky-500"] svg,
+button[class*="from-[#082746]"] svg,
+button[class*="bg-sky-600"] svg,
+button[class*="bg-teal-600"] svg,
+button[class*="bg-emerald-600"] svg {
+  color: #ffffff !important;
+}
+
+/* High-contrast status badge safeguards */
+.badge-blue,
+.badge-status-blue {
+  background-color: #0A78B5 !important;
+  color: #ffffff !important;
+}
+
+.badge-green,
+.badge-status-green {
+  background-color: #32B86A !important;
+  color: #ffffff !important;
+}
+
+.badge-critical,
+.badge-status-critical {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+}
+
+/* Red alert badge safeguards */
+.bg-rose-600,
+.bg-rose-700,
+.bg-red-600,
+.bg-red-700 {
+  color: #ffffff !important;
 }
 
 body {

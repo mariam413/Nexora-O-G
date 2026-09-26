@@ -19,6 +19,7 @@ import {
 import { store } from '../../services/store';
 import { Material, MaintenanceRequirement } from '../../types';
 import { CriticalAlertsSection } from './CriticalAlertsSection';
+import { PredictiveTrendsWidget } from './PredictiveTrendsWidget';
 
 interface OrganizationDashboardProps {
   onNavigate: (view: string, id?: string) => void;
@@ -240,6 +241,18 @@ export const OrganizationDashboard: React.FC<OrganizationDashboardProps> = ({
           <p className="text-[10px] text-slate-400 mt-2">In transit tracking</p>
         </div>
       </div>
+
+      {/* Predictive Trends Widget (12-Month Recharts Consumption Forecast) */}
+      <PredictiveTrendsWidget
+        materials={materials}
+        maintenance={maintenance}
+        orders={allOrders}
+        facilities={facilities}
+        selectedFacilityId={selectedFacilityId}
+        onNavigate={onNavigate}
+        onOpenMaterialModal={onOpenMaterialModal}
+        onOpenProcureModal={onOpenProcureModal}
+      />
 
       {/* AI Priority Alerts Section (Section 13) */}
       {priorityMaterial && (
